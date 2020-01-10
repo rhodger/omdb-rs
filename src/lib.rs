@@ -21,11 +21,9 @@ mod tests {
 }
 
 
-
 use serde::{Serialize, Deserialize};
 use serde_json;
 use reqwest;
-
 
 
 /// Structure for holding information about a Film.
