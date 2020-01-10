@@ -1,5 +1,5 @@
 [package]
-name = "omdb-rs"
+name = "omdbrs"
 version = "0.1.0"
 authors = ["SuedeGently <ymp17kwu@uea.ac.uk>"]
 edition = "2018"
