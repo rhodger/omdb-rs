@@ -9,8 +9,8 @@ mod tests {
 
 	#[test]
 	fn get_film_test(){
-		assert_eq!(get_film().unwrap().Title, "Shrek");
-		assert_eq!(get_film().unwrap().Year, "2001");
+		assert_eq!(get_film(String::from("shrek")).unwrap().Title, "Shrek");
+		assert_eq!(get_film(String::from("shrek")).unwrap().Year, "2001");
 	}
 }
 
@@ -24,7 +24,7 @@ struct Film{
 	Year: String
 }
 
-fn get_film() -> Result<Film, reqwest::Error>{
-	let mut data = reqwest::get("http://www.omdbapi.com/?apikey=21e783b3&t=shrek")?;
+fn get_film(title: String) -> Result<Film, reqwest::Error>{
+	let mut data = reqwest::get(&format!("http://www.omdbapi.com/?apikey=21e783b3&t={}", title)[..])?;
 	Ok(serde_json::from_str(&data.text().unwrap()).unwrap())
 }
