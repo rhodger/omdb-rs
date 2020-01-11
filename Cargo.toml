@@ -8,7 +8,7 @@ repository = "https://github.com/SuedeGently/omdb-rs"
 description = "OMDb API library"
 keywords = ["omdb","api","http"]
 categories = ["api-bindings"]
-license = "LICENSE"
+license = "MIT"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
