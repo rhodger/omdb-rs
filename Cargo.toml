@@ -1,8 +1,13 @@
 [package]
 name = "omdbrs"
-version = "0.1.0"
+version = "1.0.0"
 authors = ["SuedeGently <ymp17kwu@uea.ac.uk>"]
 edition = "2018"
+repository = "README.md"
+description = "OMDb API library"
+keywords = ["omdb","api","http"]
+categories = ["api-bindings"]
+license = "LICENSE"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
