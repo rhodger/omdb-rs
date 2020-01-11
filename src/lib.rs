@@ -1,3 +1,9 @@
+//! A library for interacting with the OMDb in Rust.
+//!
+//! Interactions are mostly through the `Film` object, which is constructed
+//! using some information usable in an OMDb search, and which can then be
+//! interacted with through a series of methods.
+
 #[cfg(test)]
 mod tests {
 	use super::*;
@@ -30,12 +36,38 @@ mod tests {
 		  "2001"
 		);
 	}
+
+	#[test]
+	fn from_title_test(){
+		let film: Film = Film::from_title(String::from("Shrek")).unwrap();
+
+		assert_eq!(film.Title, "Shrek");
+		assert_eq!(film.Year, "2001");
+
+		assert!(Film::from_title(String::from("gobbeldygookasdfblu")).is_err());
+	}
+
+	#[test]
+	fn from_id_test(){
+		let film: Film = Film::from_id(String::from("tt0126029")).unwrap();
+
+		assert_eq!(film.Title, "Shrek");
+		assert_eq!(film.Year, "2001");
+
+		assert!(Film::from_id(String::from("gobbeldygookasdfblur")).is_err());
+	}
 }
 
 
 use serde::{Serialize, Deserialize};
 use serde_json;
 use reqwest;
+use custom_error::custom_error;
+
+
+custom_error!{pub FilmError
+	FilmNotFound = "No film matching the given criteria was found"
+}
 
 
 /// Structure for holding information about a Film.
@@ -43,10 +75,51 @@ use reqwest;
 /// Currently only holds title and year, however to add more fields from the
 /// retrieved JSONs should be added. This should be enough, as serde_json pulls
 /// every relevant field when populating an instance of Film.
+///
+/// # Examples
+///
+/// To create a Film object representing the film Shrek:
+/// ```
+/// use omdbrs::Film;
+/// 
+/// let film: Film = Film::from_title(String::from("Shrek")).unwrap();
+///
+/// assert_eq!(film.Title, "Shrek");
+/// ```
+/// In practice, `unwrap()` should not be used as a `FilmError` may be returned.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Film{
 	pub Title: String,
 	pub Year: String
+}
+
+
+impl Film{
+	/// Constructor for a Film object using a film's title.
+	///
+	/// Creates a Film object using the result of an OMDb query using the given
+	/// title. If no matching film is found, a `FilmError` is returned instead.
+	pub fn from_title(title: String) -> Result<Film, FilmError>{
+		let film: Film = match search_by_title(title){
+			Ok(x) => x,
+			Err(e) => return Err(FilmError::FilmNotFound)
+		};
+
+		Ok(film)
+	}
+
+	/// Constructor for a Film object using a film's IMDB id.
+	///
+	/// Creates a Film object using the result of an OMDb query using the given
+	/// id. If no matching film is found, a `FilmError` is returned instead.
+	pub fn from_id(id: String) -> Result<Film, FilmError>{
+		let film: Film = match search_by_id(id){
+			Ok(x) => x,
+			Err(e) => return Err(FilmError::FilmNotFound)
+		};
+
+		Ok(film)
+	}
 }
 
 /// Searches for and returns a film in the OMDb.
@@ -59,7 +132,7 @@ pub struct Film{
 /// # Examples
 ///
 /// To search for the film Shrek:
-/// ```
+/// ``` ignore
 /// use omdbrs;
 ///
 /// let shrek: omdbrs::Film = omdbrs::search_by_title(String::from("shrek"))
@@ -67,12 +140,15 @@ pub struct Film{
 ///
 /// assert_eq!(shrek.Title, "Shrek");
 /// ```
-pub fn search_by_title(title: String) -> Result<Film, reqwest::Error>{
+fn search_by_title(title: String) -> Result<Film, serde_json::Error>{
 	let mut data = reqwest::get(
 	  &format!("http://www.omdbapi.com/?apikey=21e783b3&t={}", title)[..]
-	)?;
+	).unwrap();
 
-	Ok(serde_json::from_str(&data.text().unwrap()).unwrap())
+	return match serde_json::from_str(&data.text().unwrap()){
+		Ok(x) => Ok(x),
+		Err(e) => Err(e)
+	}
 }
 
 /// Searches for and returns a film in the OMDb.
@@ -85,7 +161,7 @@ pub fn search_by_title(title: String) -> Result<Film, reqwest::Error>{
 /// # Examples
 ///
 /// To search for the film Shrek:
-/// ```
+/// ``` ignore
 /// use omdbrs;
 ///
 /// let shrek: omdbrs::Film = omdbrs::search_by_id(String::from("tt0126029"))
@@ -93,10 +169,13 @@ pub fn search_by_title(title: String) -> Result<Film, reqwest::Error>{
 ///
 /// assert_eq!(shrek.Title, "Shrek");
 /// ```
-pub fn search_by_id(id: String) -> Result<Film, reqwest::Error>{
+fn search_by_id(id: String) -> Result<Film, serde_json::Error>{
 	let mut data = reqwest::get(
 	  &format!("http://www.omdbapi.com/?apikey=21e783b3&i={}", id)[..]
-	)?;
+	).unwrap();
 
-	Ok(serde_json::from_str(&data.text().unwrap()).unwrap())
+	return match serde_json::from_str(&data.text().unwrap()){
+		Ok(x) => Ok(x),
+		Err(e) => Err(e)
+	}
 }
