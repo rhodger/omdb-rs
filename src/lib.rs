@@ -8,13 +8,25 @@ mod tests {
     }
 
 	#[test]
-	fn get_film_test(){
+	fn search_by_title_test(){
 		assert_eq!(
 		  search_by_title(String::from("shrek")).unwrap().Title,
 		  "Shrek"
 		);
 		assert_eq!(
 		  search_by_title(String::from("shrek")).unwrap().Year,
+		  "2001"
+		);
+	}
+
+	#[test]
+	fn search_by_id_test(){
+		assert_eq!(
+		  search_by_id(String::from("tt0126029")).unwrap().Title,
+		  "Shrek"
+		);
+		assert_eq!(
+		  search_by_id(String::from("tt0126029")).unwrap().Year,
 		  "2001"
 		);
 	}
@@ -58,6 +70,32 @@ pub struct Film{
 pub fn search_by_title(title: String) -> Result<Film, reqwest::Error>{
 	let mut data = reqwest::get(
 	  &format!("http://www.omdbapi.com/?apikey=21e783b3&t={}", title)[..]
+	)?;
+
+	Ok(serde_json::from_str(&data.text().unwrap()).unwrap())
+}
+
+/// Searches for and returns a film in the OMDb.
+///
+/// Sends a request to OMDb for a film with the id `id` and returns a Film
+/// object populated with the returned information. Does no input validation,
+/// formatting, or case-switching, so can be temperamental. Returns a
+/// `reqwest::Error` upon failure.
+///
+/// # Examples
+///
+/// To search for the film Shrek:
+/// ```
+/// use omdbrs;
+///
+/// let shrek: omdbrs::Film = omdbrs::search_by_id(String::from("tt0126029"))
+///   .unwrap();
+///
+/// assert_eq!(shrek.Title, "Shrek");
+/// ```
+pub fn search_by_id(id: String) -> Result<Film, reqwest::Error>{
+	let mut data = reqwest::get(
+	  &format!("http://www.omdbapi.com/?apikey=21e783b3&i={}", id)[..]
 	)?;
 
 	Ok(serde_json::from_str(&data.text().unwrap()).unwrap())
