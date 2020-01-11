@@ -56,6 +56,17 @@ mod tests {
 
 		assert!(Film::from_id(String::from("gobbeldygookasdfblur")).is_err());
 	}
+
+	#[test]
+	fn film_get_test(){
+		let film: Film = Film{
+			Title: String::from("Shrek"),
+			Year: String::from("2001")
+		};
+
+		assert_eq!(film.get_title(), "Shrek");
+		assert_eq!(film.get_year(), "2001");
+	}
 }
 
 
@@ -84,13 +95,13 @@ custom_error!{pub FilmError
 /// 
 /// let film: Film = Film::from_title(String::from("Shrek")).unwrap();
 ///
-/// assert_eq!(film.Title, "Shrek");
+/// assert_eq!(film.get_title(), "Shrek");
 /// ```
 /// In practice, `unwrap()` should not be used as a `FilmError` may be returned.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Film{
-	pub Title: String,
-	pub Year: String
+	Title: String,
+	Year: String
 }
 
 
@@ -120,6 +131,10 @@ impl Film{
 
 		Ok(film)
 	}
+
+	pub fn get_title(&self) -> String{ String::from(&self.Title) }
+
+	pub fn get_year(&self) -> String{ String::from(&self.Year) }
 }
 
 /// Searches for and returns a film in the OMDb.
