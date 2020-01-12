@@ -6,11 +6,13 @@ This is a library of tools for searching/interacting with the [Online Movie Data
 ```rust
 use omdbrs::Film;
 
-let film: Film = Film::from_title("Shrek");
+let NAME = String::from("Shrek");
+let API_KEY = String::from("[YOUR_API_KEY]");
+
+let film: Film = Film::from_title(NAME, API_KEY);
 
 assert_eq!(film.get_year(), "2001");
 ```
 
 Note: This library uses an outdated version of Reqwest.
 
-Note: This library currently uses a hardcoded API key with a limit of 1000 requests daily; this will be changed to a dynamic key in a future release.
