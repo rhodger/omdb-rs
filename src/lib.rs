@@ -1,7 +1,7 @@
 //! A library for interacting with the OMDb in Rust.
 //!
 //! Interactions are mostly through the `Film` object, which is constructed
-//! using some information usable in an OMDb search, and which can then be
+//! using some information applicable to an OMDb search, and which can then be
 //! interacted with through a series of methods.
 
 #[cfg(test)]
@@ -86,9 +86,9 @@ custom_error!{pub FilmError
 
 /// Structure for holding information about a Film.
 ///
-/// Currently only holds title and year, however to add more fields from the
-/// retrieved JSONs should be added. This should be enough, as serde_json pulls
-/// every relevant field when populating an instance of Film.
+/// Stores information about a film as retrieved from the OMDb. Should be
+/// constructed using either `from_title()` or `from_id()`. This information can
+/// be accessed using the included getters.
 ///
 /// # Examples
 ///
