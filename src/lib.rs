@@ -43,6 +43,7 @@ mod tests {
 
 		assert_eq!(film.Title, "Shrek");
 		assert_eq!(film.Year, "2001");
+		assert_eq!(film.Runtime, "90 min");
 
 		assert!(Film::from_title(String::from("gobbeldygookasdfblu")).is_err());
 	}
@@ -61,11 +62,13 @@ mod tests {
 	fn film_get_test(){
 		let film: Film = Film{
 			Title: String::from("Shrek"),
-			Year: String::from("2001")
+			Year: String::from("2001"),
+			Runtime: String::from("90 min")
 		};
 
 		assert_eq!(film.get_title(), "Shrek");
 		assert_eq!(film.get_year(), "2001");
+		assert_eq!(film.get_runtime(), "90 min");
 	}
 }
 
@@ -101,7 +104,8 @@ custom_error!{pub FilmError
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Film{
 	Title: String,
-	Year: String
+	Year: String,
+	Runtime: String
 }
 
 
@@ -135,6 +139,8 @@ impl Film{
 	pub fn get_title(&self) -> String{ String::from(&self.Title) }
 
 	pub fn get_year(&self) -> String{ String::from(&self.Year) }
+
+	pub fn get_runtime(&self) -> String{ String::from(&self.Runtime) }
 }
 
 /// Searches for and returns a film in the OMDb.
