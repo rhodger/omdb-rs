@@ -15,47 +15,47 @@ mod tests {
 
 	#[test]
 	fn search_by_title_test(){
-		assert_eq!(
-		  search_by_title(String::from("shrek")).unwrap().Title,
-		  "Shrek"
-		);
-		assert_eq!(
-		  search_by_title(String::from("shrek")).unwrap().Year,
-		  "2001"
-		);
+		assert_eq!(search_by_title(String::from("shrek"),
+		  				  		   String::from("21e783b3")).unwrap().Title,
+		  		   "Shrek");
+		assert_eq!(search_by_title(String::from("shrek"),
+                                   String::from("21e783b3")).unwrap().Year,
+		           "2001");
 	}
 
 	#[test]
 	fn search_by_id_test(){
-		assert_eq!(
-		  search_by_id(String::from("tt0126029")).unwrap().Title,
-		  "Shrek"
-		);
-		assert_eq!(
-		  search_by_id(String::from("tt0126029")).unwrap().Year,
-		  "2001"
-		);
+		assert_eq!(search_by_id(String::from("tt0126029"),
+                                String::from("21e783b3")).unwrap().Title,
+		           "Shrek");
+		assert_eq!(search_by_id(String::from("tt0126029"),
+                                String::from("21e783b3")).unwrap().Year,
+		           "2001");
 	}
 
 	#[test]
 	fn from_title_test(){
-		let film: Film = Film::from_title(String::from("Shrek")).unwrap();
+		let film: Film = Film::from_title(String::from("Shrek"),
+                                          String::from("21e783b3")).unwrap();
 
 		assert_eq!(film.Title, "Shrek");
 		assert_eq!(film.Year, "2001");
 		assert_eq!(film.Runtime, "90 min");
 
-		assert!(Film::from_title(String::from("gobbeldygookasdfblu")).is_err());
+		assert!(Film::from_title(String::from("gobbeldygookasdfblu"),
+                                 String::from("asdf")).is_err());
 	}
 
 	#[test]
 	fn from_id_test(){
-		let film: Film = Film::from_id(String::from("tt0126029")).unwrap();
+		let film: Film = Film::from_id(String::from("tt0126029"),
+                                       String::from("21e783b3")).unwrap();
 
 		assert_eq!(film.Title, "Shrek");
 		assert_eq!(film.Year, "2001");
 
-		assert!(Film::from_id(String::from("gobbeldygookasdfblur")).is_err());
+		assert!(Film::from_id(String::from("gobbeldygookasdfblur"),
+                              String::from("asdf")).is_err());
 	}
 
 	#[test]
@@ -96,7 +96,8 @@ custom_error!{pub FilmError
 /// ```
 /// use omdbrs::Film;
 /// 
-/// let film: Film = Film::from_title(String::from("Shrek")).unwrap();
+/// let film: Film = Film::from_title(String::from("Shrek"),
+///                                   String::from("21e783b3")).unwrap();
 ///
 /// assert_eq!(film.get_title(), "Shrek");
 /// ```
@@ -114,8 +115,8 @@ impl Film{
 	///
 	/// Creates a Film object using the result of an OMDb query using the given
 	/// title. If no matching film is found, a `FilmError` is returned instead.
-	pub fn from_title(title: String) -> Result<Film, FilmError>{
-		let film: Film = match search_by_title(title){
+	pub fn from_title(title: String, key: String) -> Result<Film, FilmError>{
+		let film: Film = match search_by_title(title, key){
 			Ok(x) => x,
 			Err(e) => return Err(FilmError::FilmNotFound)
 		};
@@ -127,8 +128,8 @@ impl Film{
 	///
 	/// Creates a Film object using the result of an OMDb query using the given
 	/// id. If no matching film is found, a `FilmError` is returned instead.
-	pub fn from_id(id: String) -> Result<Film, FilmError>{
-		let film: Film = match search_by_id(id){
+	pub fn from_id(id: String, key: String) -> Result<Film, FilmError>{
+		let film: Film = match search_by_id(id, key){
 			Ok(x) => x,
 			Err(e) => return Err(FilmError::FilmNotFound)
 		};
@@ -161,9 +162,9 @@ impl Film{
 ///
 /// assert_eq!(shrek.Title, "Shrek");
 /// ```
-fn search_by_title(title: String) -> Result<Film, serde_json::Error>{
+fn search_by_title(title:String, key:String) -> Result<Film, serde_json::Error>{
 	let mut data = reqwest::get(
-	  &format!("http://www.omdbapi.com/?apikey=21e783b3&t={}", title)[..]
+	  &format!("http://www.omdbapi.com/?apikey={}&t={}", key, title)[..]
 	).unwrap();
 
 	return match serde_json::from_str(&data.text().unwrap()){
@@ -190,9 +191,9 @@ fn search_by_title(title: String) -> Result<Film, serde_json::Error>{
 ///
 /// assert_eq!(shrek.Title, "Shrek");
 /// ```
-fn search_by_id(id: String) -> Result<Film, serde_json::Error>{
+fn search_by_id(id: String, key: String) -> Result<Film, serde_json::Error>{
 	let mut data = reqwest::get(
-	  &format!("http://www.omdbapi.com/?apikey=21e783b3&i={}", id)[..]
+	  &format!("http://www.omdbapi.com/?apikey={}&i={}", key, id)[..]
 	).unwrap();
 
 	return match serde_json::from_str(&data.text().unwrap()){
