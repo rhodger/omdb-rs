@@ -1,6 +1,6 @@
 [package]
 name = "omdbrs"
-version = "2.3.0"
+version = "2.4.0"
 authors = ["SuedeGently <ymp17kwu@uea.ac.uk>"]
 edition = "2018"
 readme = "README.md"
