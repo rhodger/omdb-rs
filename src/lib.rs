@@ -57,6 +57,14 @@ mod tests {
         assert!(Film::from_id(String::from("gobbeldygookasdfblur"),
                               String::from("asdf")).is_err());
     }
+
+    #[test]
+    fn test_search_for(){
+        let results: Vec<Film> = search_for("shrek");
+
+        assert_eq!(results[0].Title, "Shrek");
+        assert_eq!(results[1].Title, "Shrek 2");
+    }
 }
 
 
@@ -105,6 +113,15 @@ pub struct Film{
     Language: String
 }
 
+struct SearchResults{
+    0: String,
+    1: String,
+    2: String,
+    3: String,
+    4: String,
+    5: String
+}
+
 
 impl Film{
     /// Constructor for a Film object using a film's title.
@@ -131,6 +148,29 @@ impl Film{
         };
 
         Ok(film)
+    }
+
+    pub fn search_for(title: String) -> Result<Vec<Film>, FilmError>{
+        let mut results: Vec<Film> = Vec::new();
+        
+        let mut data = reqwest::get(
+          &format!("http://www.omdbapi.com/?apikey={}&s={}", key, title)[..]
+        );
+
+        
+        let results_json: SearchResults = match serde_json::from_str(
+          &data.text().unwrap()
+        ){
+            Ok(x) => Ok(x),
+            Err(e) => Err(e)
+        }
+
+        results.push(match serde_json::from_str(results_json.0)){
+            Ok(x) => x,
+            Err(e) => return Err(FilmError::FilmNotFound)
+        };
+
+        return results;
     }
 
     // ==========
