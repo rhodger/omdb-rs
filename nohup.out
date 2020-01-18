@@ -1,0 +1,6 @@
+
+(tilda:19848): Vte-WARNING **: 19:23:49.414: (../../src/vtegtk.cc:1906):int vte_terminal_match_add_gregex(VteTerminal*, GRegex*, GRegexMatchFlags): runtime check failed: (g_regex_get_compile_flags(gregex) & G_REGEX_MULTILINE)
+Tilda has started. Press <Primary><Alt>t to pull down the window.
+
+(tilda:19980): Vte-WARNING **: 19:24:29.186: (../../src/vtegtk.cc:1906):int vte_terminal_match_add_gregex(VteTerminal*, GRegex*, GRegexMatchFlags): runtime check failed: (g_regex_get_compile_flags(gregex) & G_REGEX_MULTILINE)
+Tilda has started. Press F2 to pull down the window.

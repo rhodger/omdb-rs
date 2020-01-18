@@ -57,19 +57,6 @@ mod tests {
         assert!(Film::from_id(String::from("gobbeldygookasdfblur"),
                               String::from("asdf")).is_err());
     }
-
-    #[test]
-    fn film_get_test(){
-        let film: Film = Film{
-            Title: String::from("Shrek"),
-            Year: String::from("2001"),
-            Runtime: String::from("90 min")
-        };
-
-        assert_eq!(film.get_title(), "Shrek");
-        assert_eq!(film.get_year(), "2001");
-        assert_eq!(film.get_runtime(), "90 min");
-    }
 }
 
 
@@ -88,7 +75,8 @@ custom_error!{pub FilmError
 ///
 /// Stores information about a film as retrieved from the OMDb. Should be
 /// constructed using either `from_title()` or `from_id()`. This information can
-/// be accessed using the included getters.
+/// be accessed using the included getters. All information is stored as
+/// Strings.
 ///
 /// # Examples
 ///
@@ -106,7 +94,15 @@ custom_error!{pub FilmError
 pub struct Film{
     Title: String,
     Year: String,
-    Runtime: String
+    Runtime: String,
+    Rated: String,
+    Released: String,
+    Genre: String,
+    Director: String,
+    Writer: String,
+    Actors: String,
+    Plot: String,
+    Language: String
 }
 
 
@@ -137,11 +133,30 @@ impl Film{
         Ok(film)
     }
 
+    // ==========
+    // Getters
+    // ==========
     pub fn get_title(&self) -> String{ String::from(&self.Title) }
 
     pub fn get_year(&self) -> String{ String::from(&self.Year) }
 
     pub fn get_runtime(&self) -> String{ String::from(&self.Runtime) }
+
+    pub fn get_rated(&self) -> String{ String::from(&self.Rated) }
+
+    pub fn get_released(&self) -> String{ String::from(&self.Released) }
+
+    pub fn get_genre(&self) -> String{ String::from(&self.Genre) }
+
+    pub fn get_director(&self) -> String{ String::from(&self.Director) }
+
+    pub fn get_writer(&self) -> String{ String::from(&self.Writer) }
+
+    pub fn get_actors(&self) -> String{ String::from(&self.Actors) }
+
+    pub fn get_plot(&self) -> String{ String::from(&self.Plot) }
+
+    pub fn get_language(&self) -> String{ String::from(&self.Language) }
 }
 
 /// Searches for and returns a film in the OMDb.
