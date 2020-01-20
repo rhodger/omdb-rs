@@ -16,10 +16,10 @@ mod tests {
     #[test]
     fn search_by_title_test(){
         assert_eq!(search_by_title(String::from("shrek"),
-                                   String::from("21e783b3")).unwrap().Title,
+                                   &String::from("21e783b3")).unwrap().Title,
                    "Shrek");
         assert_eq!(search_by_title(String::from("shrek"),
-                                   String::from("21e783b3")).unwrap().Year,
+                                   &String::from("21e783b3")).unwrap().Year,
                    "2001");
     }
 
@@ -60,8 +60,13 @@ mod tests {
 
     #[test]
     fn test_search_for(){
-        let results: Vec<Film> = search_for("shrek");
+        println!("Testing search_for()");
+        let results: Vec<Film> = match Film::search_for(String::from("shrek"), String::from("21e783b3")){
+            Ok(x) => x,
+            Err(e) => panic!("Fucked it!: {}", e)
+        };
 
+        println!("Got past search");
         assert_eq!(results[0].Title, "Shrek");
         assert_eq!(results[1].Title, "Shrek 2");
     }
@@ -72,10 +77,12 @@ use serde::{Serialize, Deserialize};
 use serde_json;
 use reqwest;
 use custom_error::custom_error;
+use regex::Regex;
 
 
 custom_error!{pub FilmError
-    FilmNotFound = "No film matching the given criteria was found"
+    FilmNotFound = "No film matching the given criteria was found",
+    NotEnoughResults = "Not enough results matching that title were found",
 }
 
 
@@ -114,12 +121,12 @@ pub struct Film{
 }
 
 struct SearchResults{
-    0: String,
-    1: String,
-    2: String,
-    3: String,
-    4: String,
-    5: String
+    zero: String,
+    one: String,
+    two: String,
+    three: String,
+    four: String,
+    five: String
 }
 
 
@@ -129,7 +136,7 @@ impl Film{
     /// Creates a Film object using the result of an OMDb query using the given
     /// title. If no matching film is found, a `FilmError` is returned instead.
     pub fn from_title(title: String, key: String) -> Result<Film, FilmError>{
-        let film: Film = match search_by_title(title, key){
+        let film: Film = match search_by_title(title, &key){
             Ok(x) => x,
             Err(e) => return Err(FilmError::FilmNotFound)
         };
@@ -150,27 +157,26 @@ impl Film{
         Ok(film)
     }
 
-    pub fn search_for(title: String) -> Result<Vec<Film>, FilmError>{
+    pub fn search_for(title: String, key: String) -> Result<Vec<Film>, FilmError>{
         let mut results: Vec<Film> = Vec::new();
-        
+        let formatter: Regex = Regex::new(r###""Title":"[\w\s]+""###).unwrap();
+
         let mut data = reqwest::get(
           &format!("http://www.omdbapi.com/?apikey={}&s={}", key, title)[..]
-        );
-
-        
-        let results_json: SearchResults = match serde_json::from_str(
-          &data.text().unwrap()
-        ){
-            Ok(x) => Ok(x),
-            Err(e) => Err(e)
+        ).unwrap();
+        let text = data.text().unwrap();
+        let captures = match formatter.captures(&text){
+            Some(x) => x,
+            _ => return Err(FilmError::NotEnoughResults)
+        };
+        for i in 1..6{
+            results.push(match search_by_title(String::from(captures.get(i).unwrap().as_str()), &key){
+            Ok(x) => x,
+            Err(e) => return Err(FilmError::NotEnoughResults)
+        });
         }
 
-        results.push(match serde_json::from_str(results_json.0)){
-            Ok(x) => x,
-            Err(e) => return Err(FilmError::FilmNotFound)
-        };
-
-        return results;
+        Ok(results)
     }
 
     // ==========
@@ -217,7 +223,7 @@ impl Film{
 ///
 /// assert_eq!(shrek.Title, "Shrek");
 /// ```
-fn search_by_title(title:String, key:String) -> Result<Film, serde_json::Error>{
+fn search_by_title(title:String, key:&String) -> Result<Film, serde_json::Error>{
     let mut data = reqwest::get(
       &format!("http://www.omdbapi.com/?apikey={}&t={}", key, title)[..]
     ).unwrap();
