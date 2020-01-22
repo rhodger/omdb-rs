@@ -83,7 +83,10 @@ use regex::Regex;
 
 
 custom_error!{pub FilmError
+    /// Denotes an inability to find a film in a search
     FilmNotFound = "No film matching the given criteria was found",
+
+    /// Denotes a sufficient number of results in a search
     NotEnoughResults = "Not enough results matching that title were found",
 }
 
@@ -122,16 +125,6 @@ pub struct Film{
     Language: String
 }
 
-struct SearchResults{
-    zero: String,
-    one: String,
-    two: String,
-    three: String,
-    four: String,
-    five: String
-}
-
-
 impl Film{
     /// Constructor for a Film object using a film's title.
     ///
@@ -159,6 +152,10 @@ impl Film{
         Ok(film)
     }
 
+    /// Returns a list of results found in a search for the given title.
+    ///
+    /// Pulls the titles from a list of results to the query `title` and returns
+    /// a vector of `Film` objects containing each matching film in the OMDb.
     pub fn search_for(title: String,key: String) -> Result<Vec<Film>,FilmError>{
         let mut results: Vec<Film> = Vec::new();
         let formatter: Regex = Regex::new(r###""Title":"[\w\s]+?""###).unwrap();
