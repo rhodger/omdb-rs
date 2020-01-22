@@ -60,7 +60,7 @@ mod tests {
 
     #[test]
     fn test_search_for(){
-        println!("Testing search_for()");
+        println!("Testing search_for");
         let results: Vec<Film> = match Film::search_for(String::from("shrek"), String::from("21e783b3")){
             Ok(x) => x,
             Err(e) => panic!("Fucked it!: {}", e)
@@ -159,21 +159,27 @@ impl Film{
 
     pub fn search_for(title: String, key: String) -> Result<Vec<Film>, FilmError>{
         let mut results: Vec<Film> = Vec::new();
-        let formatter: Regex = Regex::new(r###""Title":"[\w\s]+""###).unwrap();
+        let formatter: Regex = Regex::new(r###""Title":"[\w\s]+?""###).unwrap();
+
+        println!("Initialised regex");
 
         let mut data = reqwest::get(
           &format!("http://www.omdbapi.com/?apikey={}&s={}", key, title)[..]
         ).unwrap();
+        println!("Got data");
+
         let text = data.text().unwrap();
-        let captures = match formatter.captures(&text){
-            Some(x) => x,
-            _ => return Err(FilmError::NotEnoughResults)
-        };
-        for i in 1..6{
-            results.push(match search_by_title(String::from(captures.get(i).unwrap().as_str()), &key){
-            Ok(x) => x,
-            Err(e) => return Err(FilmError::NotEnoughResults)
-        });
+        println!("Got text from data:\n{}\n", text);
+
+        let captures = formatter.find_iter(&text);
+
+        // println!("Got {}", captures.get(0).unwrap().as_str());
+        // println!("Got {}", captures.get(1).unwrap().as_str());
+
+        for i in captures{
+            let x = &i.as_str().chars().count();
+            let title = &i.as_str()[9..(*x - 1)];
+            results.push(Film::from_title(String::from(title), String::from("21e783b3"))?);
         }
 
         Ok(results)
