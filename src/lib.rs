@@ -61,7 +61,9 @@ mod tests {
     #[test]
     fn test_search_for(){
         println!("Testing search_for");
-        let results: Vec<Film> = match Film::search_for(String::from("shrek"), String::from("21e783b3")){
+        let results: Vec<Film> = match Film::search_for(String::from("shrek"),
+                                                        String::from("21e783b3")
+                                                       ){
             Ok(x) => x,
             Err(e) => panic!("Fucked it!: {}", e)
         };
@@ -157,7 +159,7 @@ impl Film{
         Ok(film)
     }
 
-    pub fn search_for(title: String, key: String) -> Result<Vec<Film>, FilmError>{
+    pub fn search_for(title: String,key: String) -> Result<Vec<Film>,FilmError>{
         let mut results: Vec<Film> = Vec::new();
         let formatter: Regex = Regex::new(r###""Title":"[\w\s]+?""###).unwrap();
 
@@ -179,7 +181,8 @@ impl Film{
         for i in captures{
             let x = &i.as_str().chars().count();
             let title = &i.as_str()[9..(*x - 1)];
-            results.push(Film::from_title(String::from(title), String::from("21e783b3"))?);
+            results.push(Film::from_title(String::from(title),
+                                          String::from("21e783b3"))?);
         }
 
         Ok(results)
