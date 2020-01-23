@@ -82,6 +82,8 @@ use custom_error::custom_error;
 use regex::Regex;
 
 
+/// A set of custom errors designed to make it easier for users to understand
+/// common errors that can occur when using omdbrs.
 custom_error!{pub FilmError
     /// Denotes an inability to find a film in a search
     FilmNotFound = "No film matching the given criteria was found",
