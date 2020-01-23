@@ -110,6 +110,7 @@ custom_error!{pub FilmError
 /// assert_eq!(film.get_title(), "Shrek");
 /// ```
 /// In practice, `unwrap()` should not be used as a `FilmError` may be returned.
+#[allow(non_snake_case)]
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Film{
     Title: String,
@@ -133,7 +134,7 @@ impl Film{
     pub fn from_title(title: String, key: String) -> Result<Film, FilmError>{
         let film: Film = match search_by_title(title, &key){
             Ok(x) => x,
-            Err(e) => return Err(FilmError::FilmNotFound)
+            Err(_) => return Err(FilmError::FilmNotFound)
         };
 
         Ok(film)
@@ -146,7 +147,7 @@ impl Film{
     pub fn from_id(id: String, key: String) -> Result<Film, FilmError>{
         let film: Film = match search_by_id(id, key){
             Ok(x) => x,
-            Err(e) => return Err(FilmError::FilmNotFound)
+            Err(_) => return Err(FilmError::FilmNotFound)
         };
 
         Ok(film)
