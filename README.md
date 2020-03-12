@@ -13,6 +13,3 @@ let film: Film = Film::from_title(NAME, API_KEY);
 
 assert_eq!(film.get_year(), "2001");
 ```
-
-Note: This library uses an outdated version of Reqwest.
-
