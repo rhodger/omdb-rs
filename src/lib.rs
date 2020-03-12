@@ -5,13 +5,12 @@
 //! interacted with through a series of methods.
 
 
-
-
 use serde::{Serialize, Deserialize};
 use serde_json;
-use reqwest;
+use reqwest::blocking;
 use custom_error::custom_error;
 use regex::Regex;
+
 
 custom_error!{pub FilmError
     FilmNotFound = "No film matching the given criteria was found",
@@ -93,7 +92,7 @@ impl Film{
 
         println!("Initialised regex");
 
-        let mut data = reqwest::get(
+        let data = blocking::get(
           &format!("http://www.omdbapi.com/?apikey={}&s={}", key, title)[..]
         ).unwrap();
         println!("Got data");
@@ -161,7 +160,7 @@ impl Film{
 /// assert_eq!(shrek.Title, "Shrek");
 /// ```
 fn search_by_title(title:String, key:&String) -> Result<Film, serde_json::Error>{
-    let mut data = reqwest::get(
+    let data = blocking::get(
       &format!("http://www.omdbapi.com/?apikey={}&t={}", key, title)[..]
     ).unwrap();
 
@@ -190,7 +189,7 @@ fn search_by_title(title:String, key:&String) -> Result<Film, serde_json::Error>
 /// assert_eq!(shrek.Title, "Shrek");
 /// ```
 fn search_by_id(id: String, key: String) -> Result<Film, serde_json::Error>{
-    let mut data = reqwest::get(
+    let data = blocking::get(
       &format!("http://www.omdbapi.com/?apikey={}&i={}", key, id)[..]
     ).unwrap();
 
