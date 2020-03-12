@@ -4,75 +4,7 @@
 //! using some information applicable to an OMDb search, and which can then be
 //! interacted with through a series of methods.
 
-#[cfg(test)]
-mod tests {
-    use super::*;
 
-    #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
-    }
-
-    #[test]
-    fn search_by_title_test(){
-        assert_eq!(search_by_title(String::from("shrek"),
-                                   &String::from("21e783b3")).unwrap().Title,
-                   "Shrek");
-        assert_eq!(search_by_title(String::from("shrek"),
-                                   &String::from("21e783b3")).unwrap().Year,
-                   "2001");
-    }
-
-    #[test]
-    fn search_by_id_test(){
-        assert_eq!(search_by_id(String::from("tt0126029"),
-                                String::from("21e783b3")).unwrap().Title,
-                   "Shrek");
-        assert_eq!(search_by_id(String::from("tt0126029"),
-                                String::from("21e783b3")).unwrap().Year,
-                   "2001");
-    }
-
-    #[test]
-    fn from_title_test(){
-        let film: Film = Film::from_title(String::from("Shrek"),
-                                          String::from("21e783b3")).unwrap();
-
-        assert_eq!(film.Title, "Shrek");
-        assert_eq!(film.Year, "2001");
-        assert_eq!(film.Runtime, "90 min");
-
-        assert!(Film::from_title(String::from("gobbeldygookasdfblu"),
-                                 String::from("asdf")).is_err());
-    }
-
-    #[test]
-    fn from_id_test(){
-        let film: Film = Film::from_id(String::from("tt0126029"),
-                                       String::from("21e783b3")).unwrap();
-
-        assert_eq!(film.Title, "Shrek");
-        assert_eq!(film.Year, "2001");
-
-        assert!(Film::from_id(String::from("gobbeldygookasdfblur"),
-                              String::from("asdf")).is_err());
-    }
-
-    #[test]
-    fn test_search_for(){
-        println!("Testing search_for");
-        let results: Vec<Film> = match Film::search_for(String::from("shrek"),
-                                                        String::from("21e783b3")
-                                                       ){
-            Ok(x) => x,
-            Err(e) => panic!("Fucked it!: {}", e)
-        };
-
-        println!("Got past search");
-        assert_eq!(results[0].Title, "Shrek");
-        assert_eq!(results[1].Title, "Shrek 2");
-    }
-}
 
 
 use serde::{Serialize, Deserialize};
@@ -265,5 +197,76 @@ fn search_by_id(id: String, key: String) -> Result<Film, serde_json::Error>{
     return match serde_json::from_str(&data.text().unwrap()){
         Ok(x) => Ok(x),
         Err(e) => Err(e)
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn it_works() {
+        assert_eq!(2 + 2, 4);
+    }
+
+    #[test]
+    fn search_by_title_test(){
+        assert_eq!(search_by_title(String::from("shrek"),
+                                   &String::from("21e783b3")).unwrap().Title,
+                   "Shrek");
+        assert_eq!(search_by_title(String::from("shrek"),
+                                   &String::from("21e783b3")).unwrap().Year,
+                   "2001");
+    }
+
+    #[test]
+    fn search_by_id_test(){
+        assert_eq!(search_by_id(String::from("tt0126029"),
+                                String::from("21e783b3")).unwrap().Title,
+                   "Shrek");
+        assert_eq!(search_by_id(String::from("tt0126029"),
+                                String::from("21e783b3")).unwrap().Year,
+                   "2001");
+    }
+
+    #[test]
+    fn from_title_test(){
+        let film: Film = Film::from_title(String::from("Shrek"),
+                                          String::from("21e783b3")).unwrap();
+
+        assert_eq!(film.Title, "Shrek");
+        assert_eq!(film.Year, "2001");
+        assert_eq!(film.Runtime, "90 min");
+
+        assert!(Film::from_title(String::from("gobbeldygookasdfblu"),
+                                 String::from("asdf")).is_err());
+    }
+
+    #[test]
+    fn from_id_test(){
+        let film: Film = Film::from_id(String::from("tt0126029"),
+                                       String::from("21e783b3")).unwrap();
+
+        assert_eq!(film.Title, "Shrek");
+        assert_eq!(film.Year, "2001");
+
+        assert!(Film::from_id(String::from("gobbeldygookasdfblur"),
+                              String::from("asdf")).is_err());
+    }
+
+    #[test]
+    fn test_search_for(){
+        println!("Testing search_for");
+        let results: Vec<Film> = match Film::search_for(String::from("shrek"),
+                                                        String::from("21e783b3")
+                                                       ){
+            Ok(x) => x,
+            Err(e) => panic!("Fucked it!: {}", e)
+        };
+
+        println!("Got past search");
+        assert_eq!(results[0].Title, "Shrek");
+        assert_eq!(results[1].Title, "Shrek 2");
     }
 }
