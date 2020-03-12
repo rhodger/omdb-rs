@@ -159,7 +159,8 @@ impl Film{
 ///
 /// assert_eq!(shrek.Title, "Shrek");
 /// ```
-fn search_by_title(title:String, key:&String) -> Result<Film, serde_json::Error>{
+pub fn search_by_title(title:String, key:&String) ->
+  Result<Film, serde_json::Error> {
     let data = blocking::get(
       &format!("http://www.omdbapi.com/?apikey={}&t={}", key, title)[..]
     ).unwrap();
@@ -188,7 +189,7 @@ fn search_by_title(title:String, key:&String) -> Result<Film, serde_json::Error>
 ///
 /// assert_eq!(shrek.Title, "Shrek");
 /// ```
-fn search_by_id(id: String, key: String) -> Result<Film, serde_json::Error>{
+pub fn search_by_id(id: String, key: String) -> Result<Film, serde_json::Error>{
     let data = blocking::get(
       &format!("http://www.omdbapi.com/?apikey={}&i={}", key, id)[..]
     ).unwrap();
